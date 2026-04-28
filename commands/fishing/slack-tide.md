@@ -39,4 +39,16 @@ Add a brief note at the bottom about what slack tide means for each location, us
 - 🎣 **Torpedo Wharf** — good for fishing, calm water
 - 🏊 **Crissy Field** — best for swimming/wading, minimal current
 - 🏖️ **Baker Beach** — safest entry/exit, reduced rip current risk
+
+Then add a crabbing section. For each Low tide, calculate the best crabbing window as 90 minutes before to 60 minutes after the Low tide. Show separate recommendations for Torpedo Wharf and Baker Beach:
+
+🦀 **Best Crabbing Times**
+
+| 🕐 Crab Start | 🕐 Peak (Low Tide) | 🕐 Crab End | 📏 Low Height |
+|---|---|---|---|
+| [low − 90 min] | [low time] | [low + 60 min] | [height] ft |
+| ... | ... | ... | ... |
+
+- 🦀 **Torpedo Wharf** — work the pilings right at low water; crabs concentrate in the shallows
+- 🦀 **Baker Beach** — wade the sandy flats 90 min before low tide as crabs move with the ebb
 ---
