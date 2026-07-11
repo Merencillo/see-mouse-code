@@ -5,13 +5,24 @@ export const TIDE_STATIONS = {
   yerbabuena: { id: '9414863', name: 'Yerba Buena Is.' },
 }
 
-export async function fetchPredictions(stationId, dateParam) {
+export async function fetchPredictions(stationId, beginParam, endParam = beginParam) {
   const res = await fetch(
-    `https://api.tidesandcurrents.noaa.gov/api/prod/datagetter?product=predictions&application=web_services&begin_date=${dateParam}&end_date=${dateParam}&datum=MLLW&station=${stationId}&time_zone=lst_ldt&interval=hilo&units=english&format=json`
+    `https://api.tidesandcurrents.noaa.gov/api/prod/datagetter?product=predictions&application=web_services&begin_date=${beginParam}&end_date=${endParam}&datum=MLLW&station=${stationId}&time_zone=lst_ldt&interval=hilo&units=english&format=json`
   )
   const data = await res.json()
   if (data.error) throw new Error(data.error.message)
   return data.predictions
+}
+
+// Split a flat hi/lo prediction list into a Map of 'YYYY-MM-DD' -> predictions[].
+export function groupByDay(predictions) {
+  const byDate = new Map()
+  for (const p of predictions) {
+    const date = p.t.split(' ')[0]
+    if (!byDate.has(date)) byDate.set(date, [])
+    byDate.get(date).push(p)
+  }
+  return byDate
 }
 
 function toMinutes(timeStr) {

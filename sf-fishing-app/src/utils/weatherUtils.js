@@ -80,16 +80,20 @@ function buildOutlook(hourly) {
     }))
 }
 
+// Days to fetch for the multi-day forecast (Open-Meteo max is fine here).
+export const FORECAST_DAYS = 5
+
 export async function fetchWeather({ lat, lon }) {
   const params = new URLSearchParams({
     latitude: lat,
     longitude: lon,
     current: 'temperature_2m,apparent_temperature,weather_code,wind_speed_10m,wind_direction_10m,wind_gusts_10m',
     hourly: 'temperature_2m,wind_speed_10m,weather_code',
+    daily: 'weather_code,temperature_2m_max,temperature_2m_min,wind_speed_10m_max,wind_gusts_10m_max,wind_direction_10m_dominant',
     temperature_unit: 'fahrenheit',
     wind_speed_unit: 'mph',
     timezone: 'America/Los_Angeles',
-    forecast_days: '1',
+    forecast_days: String(FORECAST_DAYS),
   })
 
   const res = await fetch(`https://api.open-meteo.com/v1/forecast?${params}`)
@@ -97,13 +101,25 @@ export async function fetchWeather({ lat, lon }) {
   if (data.error) throw new Error(data.reason || 'Weather request failed')
 
   const c = data.current
+  const d = data.daily
   return {
-    temp: Math.round(c.temperature_2m),
-    feelsLike: Math.round(c.apparent_temperature),
-    windSpeed: Math.round(c.wind_speed_10m),
-    windGusts: Math.round(c.wind_gusts_10m),
-    windDir: windDirection(c.wind_direction_10m),
-    ...weatherCodeInfo(c.weather_code),
+    current: {
+      temp: Math.round(c.temperature_2m),
+      feelsLike: Math.round(c.apparent_temperature),
+      windSpeed: Math.round(c.wind_speed_10m),
+      windGusts: Math.round(c.wind_gusts_10m),
+      windDir: windDirection(c.wind_direction_10m),
+      ...weatherCodeInfo(c.weather_code),
+    },
     outlook: buildOutlook(data.hourly),
+    days: d.time.map((date, i) => ({
+      date, // 'YYYY-MM-DD'
+      tempHi: Math.round(d.temperature_2m_max[i]),
+      tempLo: Math.round(d.temperature_2m_min[i]),
+      windMax: Math.round(d.wind_speed_10m_max[i]),
+      gustMax: Math.round(d.wind_gusts_10m_max[i]),
+      windDir: windDirection(d.wind_direction_10m_dominant[i]),
+      ...weatherCodeInfo(d.weather_code[i]),
+    })),
   }
 }

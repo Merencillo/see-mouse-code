@@ -1,9 +1,11 @@
 import { formatTime } from '../utils/tideUtils'
 
-export default function TideTimeline({ predictions }) {
+export default function TideTimeline({ predictions, label }) {
   return (
     <div className="bg-white rounded-2xl shadow-md p-4 mt-4">
-      <h2 className="text-blue-700 font-bold text-lg mb-3">🌊 Today's Tides</h2>
+      <h2 className="text-blue-700 font-bold text-lg mb-3">
+        🌊 Tides{label ? ` · ${label}` : ''}
+      </h2>
       <div className="space-y-2">
         {predictions.map((p, i) => (
           <div key={i} className="flex items-center justify-between bg-sky-50 rounded-xl px-3 py-2">

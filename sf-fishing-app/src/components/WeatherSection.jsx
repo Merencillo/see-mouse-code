@@ -23,20 +23,29 @@ function LocationCard({ name, covers, data }) {
       <div className="flex items-center gap-3">
         <span className="text-4xl">{data.emoji}</span>
         <div className="text-sm text-gray-700">
-          <p className="font-semibold">
-            {data.temp}°F · {data.label}
-          </p>
-          <p className="text-gray-500 text-xs">Feels like {data.feelsLike}°F</p>
+          {data.isToday ? (
+            <>
+              <p className="font-semibold">{data.temp}°F · {data.label}</p>
+              <p className="text-gray-500 text-xs">Feels like {data.feelsLike}°F</p>
+            </>
+          ) : (
+            <>
+              <p className="font-semibold">{data.tempHi}° / {data.tempLo}° · {data.label}</p>
+              <p className="text-gray-500 text-xs">High / low</p>
+            </>
+          )}
         </div>
         <div className="ml-auto text-right text-sm text-gray-700">
           <p className="font-semibold">💨 {data.windSpeed} mph {data.windDir}</p>
-          <p className="text-gray-500 text-xs">Gusts {data.windGusts} mph</p>
+          <p className="text-gray-500 text-xs">
+            {data.isToday ? `Gusts ${data.windGusts} mph` : `Gusts to ${data.windGusts} mph`}
+          </p>
         </div>
       </div>
 
       <p className="text-gray-500 text-xs mt-2 italic">💡 {verdict.tip}</p>
 
-      {data.outlook.length > 0 && (
+      {data.isToday && data.outlook?.length > 0 && (
         <div className="flex justify-between mt-3 pt-3 border-t border-sky-100">
           {data.outlook.map(h => (
             <div key={h.time} className="text-center">
