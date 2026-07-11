@@ -5,6 +5,7 @@ import WeatherSection from './components/WeatherSection'
 import SlackWindows from './components/SlackWindows'
 import FishingSection from './components/FishingSection'
 import CrabbingSection from './components/CrabbingSection'
+import CatchesSection from './components/CatchesSection'
 import {
   getSlackWindows,
   getFishingWindows,
@@ -23,6 +24,7 @@ const TABS = [
   { id: 'slack', label: 'Slack', emoji: '⚓' },
   { id: 'crab', label: 'Crab', emoji: '🦀' },
   { id: 'fish', label: 'Fish', emoji: '🎣' },
+  { id: 'catches', label: 'Catches', emoji: '🐟' },
 ]
 
 const RANGES = [
@@ -235,6 +237,7 @@ export default function App() {
               <CrabbingSection windowsByStation={crabWindowsByStation} moonPhase={moonPhase} />
             )}
             {activeTab === 'fish' && <FishingSection windowsByStation={fishWindowsByStation} />}
+            {activeTab === 'catches' && <CatchesSection />}
           </>
         )}
       </div>
