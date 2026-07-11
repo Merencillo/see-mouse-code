@@ -1,11 +1,13 @@
 import { useState, useEffect } from 'react'
 import Header from './components/Header'
 import TideTimeline from './components/TideTimeline'
+import WeatherSection from './components/WeatherSection'
 import SlackWindows from './components/SlackWindows'
 import FishingSection from './components/FishingSection'
 import CrabbingSection from './components/CrabbingSection'
-import { getSlackWindows, getFishingWindows, getCrabbingWindows } from './utils/tideUtils'
+import { getSlackWindows, getFishingWindows, getCrabbingWindows, fetchPredictions, TIDE_STATIONS } from './utils/tideUtils'
 import { getMoonPhase } from './utils/moonPhase'
+import { fetchWeather, WEATHER_LOCATIONS } from './utils/weatherUtils'
 import './App.css'
 
 function getTodayParam() {
@@ -18,27 +20,49 @@ function getTodayParam() {
 
 export default function App() {
   const [predictions, setPredictions] = useState(null)
+  const [clipperTides, setClipperTides] = useState(null)
+  const [weather, setWeather] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
 
   useEffect(() => {
     const today = getTodayParam()
-    fetch(
-      `https://api.tidesandcurrents.noaa.gov/api/prod/datagetter?product=predictions&application=web_services&begin_date=${today}&end_date=${today}&datum=MLLW&station=9414290&time_zone=lst_ldt&interval=hilo&units=english&format=json`
-    )
-      .then(r => r.json())
-      .then(data => {
-        if (data.error) throw new Error(data.error.message)
-        setPredictions(data.predictions)
-      })
+    // Golden Gate is the reference station and drives the core of the app.
+    fetchPredictions(TIDE_STATIONS.goldengate.id, today)
+      .then(setPredictions)
       .catch(e => setError(e.message))
       .finally(() => setLoading(false))
+  }, [])
+
+  useEffect(() => {
+    const today = getTodayParam()
+    // Yerba Buena Island gives spot-accurate tides for Clipper Cove — optional,
+    // so a failure just falls back to Golden Gate rather than blocking the app.
+    fetchPredictions(TIDE_STATIONS.yerbabuena.id, today)
+      .then(setClipperTides)
+      .catch(() => setClipperTides(null))
+  }, [])
+
+  useEffect(() => {
+    // Weather is a nice-to-have — fetch each area in parallel and drop any
+    // that fail rather than blocking the tide-driven core of the app.
+    Promise.all(
+      WEATHER_LOCATIONS.map(loc =>
+        fetchWeather(loc)
+          .then(data => ({ ...loc, data }))
+          .catch(() => null)
+      )
+    ).then(results => setWeather(results.filter(Boolean)))
   }, [])
 
   const moonPhase = getMoonPhase()
   const slackWindows = predictions ? getSlackWindows(predictions) : []
   const fishingWindows = getFishingWindows(slackWindows)
-  const crabbingWindows = predictions ? getCrabbingWindows(predictions) : []
+
+  // Crabbing windows per station — spots resolve their own via stationKey.
+  const crabWindowsByStation = {}
+  if (predictions) crabWindowsByStation.goldengate = getCrabbingWindows(predictions)
+  if (clipperTides) crabWindowsByStation.yerbabuena = getCrabbingWindows(clipperTides)
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-sky-100 to-orange-50">
@@ -57,8 +81,9 @@ export default function App() {
         {predictions && (
           <>
             <TideTimeline predictions={predictions} />
+            {weather && weather.length > 0 && <WeatherSection reports={weather} />}
             <SlackWindows windows={slackWindows} />
-            <CrabbingSection windows={crabbingWindows} moonPhase={moonPhase} />
+            <CrabbingSection windowsByStation={crabWindowsByStation} moonPhase={moonPhase} />
             <FishingSection windows={fishingWindows} />
           </>
         )}

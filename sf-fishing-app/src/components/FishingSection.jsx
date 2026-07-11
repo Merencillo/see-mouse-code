@@ -2,7 +2,7 @@ export default function FishingSection({ windows }) {
   return (
     <div className="bg-white rounded-2xl shadow-md p-4 mt-4">
       <h2 className="text-blue-700 font-bold text-lg mb-1">🎣 Best Fishing Times</h2>
-      <p className="text-gray-400 text-xs mb-3">Torpedo Wharf · Baker Beach · Crissy Field</p>
+      <p className="text-gray-400 text-xs mb-3">Torpedo Wharf · Baker Beach · Crissy Field · Clipper Cove</p>
       <div className="space-y-3">
         {windows.map((w, i) => (
           <div

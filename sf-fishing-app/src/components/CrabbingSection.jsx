@@ -1,3 +1,5 @@
+import { TIDE_STATIONS } from '../utils/tideUtils'
+
 const RESOURCES = [
   {
     label: '📋 CA Dept of Fish & Wildlife — SF Regulations',
@@ -13,16 +15,24 @@ const SPOTS = [
   {
     name: 'Torpedo Wharf',
     emoji: '🦀',
+    stationKey: 'goldengate',
     tip: 'Protected spot — crabs concentrate in the shallows at low tide. Work the pilings and drop your trap right at low water for best results.',
   },
   {
     name: 'Baker Beach',
     emoji: '🦀',
+    stationKey: 'goldengate',
     tip: 'Exposed beach — crabs move with the ebb current along the bottom. Wade in 90 min before low tide and scan the sandy flats.',
+  },
+  {
+    name: 'Clipper Cove Beach',
+    emoji: '🦀',
+    stationKey: 'yerbabuena',
+    tip: 'Sheltered cove between Treasure & Yerba Buena Islands — calm, shallow water at low tide. Work the rocky Yerba Buena side for red rock crab.',
   },
 ]
 
-export default function CrabbingSection({ windows, moonPhase }) {
+export default function CrabbingSection({ windowsByStation, moonPhase }) {
   return (
     <div className="bg-white rounded-2xl shadow-md p-4 mt-4 mb-6">
       <h2 className="text-orange-600 font-bold text-lg mb-3">🦀 Best Crabbing Times</h2>
@@ -57,11 +67,19 @@ export default function CrabbingSection({ windows, moonPhase }) {
       </div>
 
       {/* Spot cards */}
-      {SPOTS.map(spot => (
+      {SPOTS.map(spot => {
+        // Use the spot's own station; fall back to Golden Gate if it didn't load.
+        const stationKey = windowsByStation[spot.stationKey] ? spot.stationKey : 'goldengate'
+        const station = TIDE_STATIONS[stationKey]
+        const windows = windowsByStation[stationKey] || []
+        return (
         <div key={spot.name} className="mb-5">
-          <h3 className="font-bold text-orange-700 text-base mb-2">
-            {spot.emoji} {spot.name}
-          </h3>
+          <div className="flex items-baseline justify-between mb-2">
+            <h3 className="font-bold text-orange-700 text-base">
+              {spot.emoji} {spot.name}
+            </h3>
+            <span className="text-gray-400 text-xs">🌊 {station.name} · {station.id}</span>
+          </div>
           <div className="space-y-2">
             {windows.map((w, i) => (
               <div key={i} className="bg-orange-50 rounded-xl p-3">
@@ -79,7 +97,8 @@ export default function CrabbingSection({ windows, moonPhase }) {
           </div>
           <p className="text-gray-500 text-xs mt-2 italic">💡 {spot.tip}</p>
         </div>
-      ))}
+        )
+      })}
     </div>
   )
 }
