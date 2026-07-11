@@ -9,7 +9,7 @@ export const TIDE_STATIONS = {
   yerbabuena: {
     id: '9414863',
     name: 'Yerba Buena Is.',
-    covers: 'Clipper Cove Beach',
+    covers: 'Clipper Cove Beach · Bimla Rhinehart Vista Pt.',
   },
 }
 

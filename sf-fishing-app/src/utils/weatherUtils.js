@@ -12,7 +12,7 @@ export const WEATHER_LOCATIONS = [
   {
     id: 'treasureisland',
     name: 'Treasure Island',
-    covers: 'Clipper Cove Beach · Yerba Buena Is.',
+    covers: 'Clipper Cove Beach · Bimla Rhinehart Vista Pt.',
     lat: 37.813,
     lon: -122.366,
   },

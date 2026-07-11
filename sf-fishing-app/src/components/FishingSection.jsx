@@ -25,6 +25,12 @@ const SPOTS = [
     stationKey: 'yerbabuena',
     tip: 'Calm, shallow cove — good for perch and jacksmelt. Fish the eelgrass edges and TI pier on a rising tide.',
   },
+  {
+    name: 'Bimla Rhinehart Vista Point',
+    emoji: '🎣',
+    stationKey: 'yerbabuena',
+    tip: 'Rocky YBI shoreline — cast for perch, jacksmelt, and rockfish along the riprap. Work the current seams off the point on a moving tide.',
+  },
 ]
 
 export default function FishingSection({ windowsByStation }) {
