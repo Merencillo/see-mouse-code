@@ -27,7 +27,6 @@ const TABS = [
 
 const RANGES = [
   { days: 1, label: 'Today' },
-  { days: 3, label: '3 Days' },
   { days: 5, label: '5 Days' },
 ]
 
