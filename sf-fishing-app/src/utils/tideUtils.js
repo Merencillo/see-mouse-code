@@ -1,8 +1,16 @@
 // NOAA tide prediction stations. Golden Gate is the SF Bay reference station;
 // Yerba Buena Island sits right beside Clipper Cove for spot-accurate tides.
 export const TIDE_STATIONS = {
-  goldengate: { id: '9414290', name: 'Golden Gate' },
-  yerbabuena: { id: '9414863', name: 'Yerba Buena Is.' },
+  goldengate: {
+    id: '9414290',
+    name: 'Golden Gate',
+    covers: 'Torpedo Wharf · Baker Beach · Crissy Field',
+  },
+  yerbabuena: {
+    id: '9414863',
+    name: 'Yerba Buena Is.',
+    covers: 'Clipper Cove Beach',
+  },
 }
 
 export async function fetchPredictions(stationId, beginParam, endParam = beginParam) {

@@ -1,10 +1,11 @@
-export default function SlackWindows({ windows }) {
+function StationSlack({ name, id, covers, windows }) {
   return (
-    <div className="bg-white rounded-2xl shadow-md p-4 mt-4">
-      <h2 className="text-blue-700 font-bold text-lg mb-1">⚓ Slack Tide Windows</h2>
-      <p className="text-gray-400 text-xs mb-3">
-        Minimal current — ideal for all water activities · NOAA Station 9414290
-      </p>
+    <div className="bg-sky-50 rounded-xl p-3">
+      <div className="flex items-baseline justify-between">
+        <h3 className="font-bold text-sky-800 text-base">📍 {name}</h3>
+        <span className="text-gray-400 text-xs">🌊 {id}</span>
+      </div>
+      <p className="text-gray-400 text-xs mb-2">{covers}</p>
       <div className="space-y-2">
         {windows.map((w, i) => (
           <div
@@ -26,6 +27,20 @@ export default function SlackWindows({ windows }) {
               <span>🕐 {w.end}</span>
             </div>
           </div>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+export default function SlackWindows({ reports }) {
+  return (
+    <div className="bg-white rounded-2xl shadow-md p-4 mt-4">
+      <h2 className="text-blue-700 font-bold text-lg mb-1">⚓ Slack Tide Windows</h2>
+      <p className="text-gray-400 text-xs mb-3">Minimal current — ideal for all water activities</p>
+      <div className="space-y-3">
+        {reports.map(r => (
+          <StationSlack key={r.key} name={r.name} id={r.id} covers={r.covers} windows={r.windows} />
         ))}
       </div>
     </div>

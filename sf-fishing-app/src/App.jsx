@@ -106,17 +106,22 @@ export default function App() {
   const dayClip = clipByDate.get(activeDate) || null
 
   const moonPhase = getMoonPhase(new Date(`${activeDate}T12:00:00`))
-  const slackWindows = getSlackWindows(dayPreds)
+
+  // Per-station predictions for the selected day, paired with station metadata.
+  const stationDays = [
+    { key: 'goldengate', ...TIDE_STATIONS.goldengate, predictions: dayPreds },
+    { key: 'yerbabuena', ...TIDE_STATIONS.yerbabuena, predictions: dayClip || [] },
+  ].filter(s => s.predictions.length)
+
+  // Tide + Slack cards per station — mirrors the Weather tab's per-location layout.
+  const tideReports = stationDays
+  const slackReports = stationDays.map(s => ({ ...s, windows: getSlackWindows(s.predictions) }))
 
   const crabWindowsByStation = {}
   const fishWindowsByStation = {}
-  if (dayPreds.length) {
-    crabWindowsByStation.goldengate = getCrabbingWindows(dayPreds)
-    fishWindowsByStation.goldengate = getFishingWindows(getSlackWindows(dayPreds))
-  }
-  if (dayClip?.length) {
-    crabWindowsByStation.yerbabuena = getCrabbingWindows(dayClip)
-    fishWindowsByStation.yerbabuena = getFishingWindows(getSlackWindows(dayClip))
+  for (const s of slackReports) {
+    crabWindowsByStation[s.key] = getCrabbingWindows(s.predictions)
+    fishWindowsByStation[s.key] = getFishingWindows(s.windows)
   }
 
   // Build weather cards for the selected day: live "now" for today, daily
@@ -216,7 +221,7 @@ export default function App() {
 
             {/* Active section */}
             {activeTab === 'tides' && (
-              <TideTimeline predictions={dayPreds} label={days[dayIndex].label} />
+              <TideTimeline reports={tideReports} label={days[dayIndex].label} />
             )}
             {activeTab === 'weather' && (
               weather === null
@@ -225,7 +230,7 @@ export default function App() {
                   ? <WeatherSection reports={weatherReports} />
                   : <div className="bg-white rounded-2xl shadow-md p-4 mt-4 text-center text-gray-400">Weather unavailable right now.</div>
             )}
-            {activeTab === 'slack' && <SlackWindows windows={slackWindows} />}
+            {activeTab === 'slack' && <SlackWindows reports={slackReports} />}
             {activeTab === 'crab' && (
               <CrabbingSection windowsByStation={crabWindowsByStation} moonPhase={moonPhase} />
             )}
