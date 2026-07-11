@@ -1,4 +1,4 @@
-# 🦀 SF Tides & Crabbing
+# 🦀 My Fav Fishing Spots
 
 A mobile-friendly web app for planning fishing and crabbing trips around the
 San Francisco Bay. It pulls live tide predictions and weather, then works out
