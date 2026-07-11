@@ -98,7 +98,7 @@ export const SPECIES = {
 
 // Common catches grouped by location.
 export const CATCHES = [
-  { location: 'Torpedo Wharf', species: ['Striped Bass', 'California Halibut', 'Jacksmelt', 'White Croaker'] },
+  { location: 'Torpedo Wharf', species: ['Striped Bass', 'California Halibut', 'Rock Crab', 'Jacksmelt', 'White Croaker'] },
   { location: 'Baker Beach', species: ['Barred Surfperch', 'Striped Bass', 'Dungeness Crab', 'Leopard Shark', 'Jacksmelt'] },
   { location: 'Crissy Field', species: ['Walleye Surfperch', 'Jacksmelt', 'Striped Bass', 'California Halibut'] },
   { location: 'Clipper Cove Beach', species: ['Shiner Perch', 'Jacksmelt', 'Rock Crab', 'Bat Ray'] },
