@@ -24,8 +24,8 @@ const TABS = [
   { id: 'weather', label: 'Weather', emoji: '🌬️' },
   { id: 'slack', label: 'Slack', emoji: '⚓' },
   { id: 'crab', label: 'Crab', emoji: '🦀' },
-  { id: 'fish', label: 'Fish', emoji: '🎣' },
-  { id: 'catches', label: 'Catches', emoji: '🐟' },
+  { id: 'fish', label: 'Fish', emoji: '🐟' },
+  { id: 'catches', label: 'Catches', emoji: '🪣' },
 ]
 
 const RANGES = [

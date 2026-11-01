@@ -10,7 +10,7 @@ in the browser against free public APIs.
 
 ## Features
 
-- **Tabbed sections** — 🌊 Tides · 🌬️ Weather · ⚓ Slack · 🦀 Crab · 🎣 Fish · 🐟 Catches
+- **Tabbed sections** — 🌊 Tides · 🌬️ Weather · ⚓ Slack · 🦀 Crab · 🐟 Fish · 🪣 Catches
 - **Today / 5-day forecast** — a range toggle plus a day picker; the selected
   day drives every tab
 - **Per-station tides** — spots are tied to the nearest NOAA station for

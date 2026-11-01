@@ -4,7 +4,7 @@ import { CATCHES } from '../utils/pixelSprites'
 export default function CatchesSection() {
   return (
     <div className="bg-white rounded-2xl shadow-md p-4 mt-4">
-      <h2 className="text-teal-700 font-bold text-lg mb-3">🐟 Common Catches</h2>
+      <h2 className="text-teal-700 font-bold text-lg mb-3">🪣 Common Catches</h2>
       <div className="space-y-3">
         {CATCHES.map(spot => (
           <div key={spot.location} className="bg-sky-50 rounded-xl p-3">

@@ -3,31 +3,31 @@ import { TIDE_STATIONS } from '../utils/tideUtils'
 const SPOTS = [
   {
     name: 'Torpedo Wharf',
-    emoji: '🎣',
+    emoji: '🐟',
     stationKey: 'goldengate',
     tip: 'Deep water off the pier — target striped bass and halibut on the incoming tide. Cast toward the channel and let bait drift.',
   },
   {
     name: 'Baker Beach',
-    emoji: '🎣',
+    emoji: '🐟',
     stationKey: 'goldengate',
     tip: 'Surfperch and stripers along the sand. Work the troughs on a rising tide; pile worms and grubs get bites.',
   },
   {
     name: 'Crissy Field',
-    emoji: '🎣',
+    emoji: '🐟',
     stationKey: 'goldengate',
     tip: 'Shoreline casting for perch, jacksmelt, and the odd striper. Best on a moving tide near the Warming Hut.',
   },
   {
     name: 'Clipper Cove Beach',
-    emoji: '🎣',
+    emoji: '🐟',
     stationKey: 'yerbabuena',
     tip: 'Calm, shallow cove — good for perch and jacksmelt. Fish the eelgrass edges and TI pier on a rising tide.',
   },
   {
     name: 'Bimla Rhinehart Vista Point',
-    emoji: '🎣',
+    emoji: '🐟',
     stationKey: 'yerbabuena',
     tip: 'Rocky YBI shoreline — cast for perch, jacksmelt, and rockfish along the riprap. Work the current seams off the point on a moving tide.',
   },
@@ -36,7 +36,7 @@ const SPOTS = [
 export default function FishingSection({ windowsByStation }) {
   return (
     <div className="bg-white rounded-2xl shadow-md p-4 mt-4">
-      <h2 className="text-blue-700 font-bold text-lg mb-3">🎣 Best Fishing Times</h2>
+      <h2 className="text-blue-700 font-bold text-lg mb-3">🐟 Best Fishing Times</h2>
 
       {SPOTS.map(spot => {
         // Use the spot's own station; fall back to Golden Gate if it didn't load.
