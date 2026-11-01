@@ -16,11 +16,28 @@ in the browser against free public APIs.
 - **Per-station tides** — spots are tied to the nearest NOAA station for
   spot-accurate high/low times:
   - **Golden Gate** (`9414290`) — Torpedo Wharf, Baker Beach, Crissy Field
-  - **Yerba Buena Is.** (`9414863`) — Clipper Cove Beach, Bimla Rhinehart Vista Point
+  - **Yerba Buena Is.** (`9414782`) — Clipper Cove Beach, Bimla Rhinehart Vista Point
+  - **Sausalito** (`9414806`) — Fort Baker / Horseshoe Bay
+  - **Ocean Beach** (`9414275`) — Ocean Beach
+  - **Oyster Point** (`9414392`) — Oyster Point Pier
+
+  Golden Gate and Yerba Buena are the *primary* stations and drive the Tides
+  and Slack tabs; the rest are fetched only to serve their crabbing spots.
 - **Slack tide windows** — low-current periods (±30 min around each tide
   midpoint), ideal for boating and easy casting
-- **Best crabbing times** — windows around each low tide, moon-phase bonus,
-  and spot-specific tips
+- **Best crabbing times** — windows around each low tide, **scored out of 100**
+  and ranked so the day's best window is called out, plus per-spot legality:
+  - **Scoring** blends how far the tide actually drops (50 pts), moon phase
+    (15), the day's peak wind (20), and daylight for access (15). Each window
+    shows the reasons behind its rating.
+  - **Dungeness season banner** — open/closed with a countdown to the next
+    first-Saturday-in-November opener
+  - **Size & bag limits** for Dungeness (5¾ in · 10/day) and rock crab
+    (4 in · 35/day)
+  - **Water-body legality** — Dungeness may not be taken inside SF or San Pablo
+    bays at all, so bay spots are flagged rock-crab-only
+  - **Gear restriction notice** — recreational crab traps are closed for
+    2026–27 (hoop nets, loop traps, or hands only)
 - **Best fishing times** — per-location windows rated off slack tide, with
   tips for each spot
 - **Wind & weather** — current conditions plus a 5-day outlook for the Golden
@@ -83,9 +100,10 @@ src/
 
 ## How it works
 
-On load, the app fetches 5 days of tide predictions for both stations and a
+On load, the app fetches 5 days of tide predictions for every station and a
 5-day weather forecast for each area up front, so switching the range or day
-is instant. For the selected day it groups predictions by station and derives
+is instant. Stations are fetched in parallel and failures are dropped
+individually — only Golden Gate, the reference station, is required. For the selected day it groups predictions by station and derives
 slack, crabbing, and fishing windows on the fly. Weather is treated as a
 nice-to-have — if an area's request fails it simply drops out rather than
 blocking the tide-driven core.
@@ -93,6 +111,9 @@ blocking the tide-driven core.
 ## Disclaimer
 
 Tide, weather, and catch information is for planning only and may be
-inaccurate. Always check current conditions and follow
+inaccurate. The crab regulations in `src/utils/crabRegs.js` were checked
+against CDFW on **2026-11-01** and are **not** fetched live — CDFW changes gear
+rules mid-season and closes areas for domoic acid, so re-check the links in the
+Crab tab before every trip. Always follow
 [CDFW fishing regulations](https://wildlife.ca.gov/Fishing) — licenses, size
 and bag limits, and seasons — before you head out.

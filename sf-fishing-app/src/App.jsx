@@ -13,6 +13,7 @@ import {
   fetchPredictions,
   groupByDay,
   TIDE_STATIONS,
+  PRIMARY_STATION_KEYS,
 } from './utils/tideUtils'
 import { getMoonPhase } from './utils/moonPhase'
 import { fetchWeather, WEATHER_LOCATIONS, FORECAST_DAYS } from './utils/weatherUtils'
@@ -56,8 +57,7 @@ function buildDays(count) {
 }
 
 export default function App() {
-  const [predictions, setPredictions] = useState(null)
-  const [clipperTides, setClipperTides] = useState(null)
+  const [tidesByStation, setTidesByStation] = useState({})
   const [weather, setWeather] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
@@ -68,21 +68,30 @@ export default function App() {
   useEffect(() => {
     const begin = dateParts(0).param
     const end = dateParts(FORECAST_DAYS - 1).param
-    // Golden Gate is the reference station and drives the core of the app.
-    fetchPredictions(TIDE_STATIONS.goldengate.id, begin, end)
-      .then(setPredictions)
-      .catch(e => setError(e.message))
-      .finally(() => setLoading(false))
-  }, [])
+    let cancelled = false
 
-  useEffect(() => {
-    const begin = dateParts(0).param
-    const end = dateParts(FORECAST_DAYS - 1).param
-    // Yerba Buena Island gives spot-accurate tides for Clipper Cove — optional,
-    // so a failure just falls back to Golden Gate rather than blocking the app.
-    fetchPredictions(TIDE_STATIONS.yerbabuena.id, begin, end)
-      .then(setClipperTides)
-      .catch(() => setClipperTides(null))
+    // Fetch every station in parallel and keep whatever comes back, so one bad
+    // station can't blank the app. Golden Gate is the reference station, though
+    // — without it there's nothing worth rendering.
+    Promise.all(
+      Object.entries(TIDE_STATIONS).map(([key, station]) =>
+        fetchPredictions(station.id, begin, end)
+          .then(predictions => [key, predictions])
+          .catch(() => [key, null])
+      )
+    ).then(entries => {
+      if (cancelled) return
+      const loaded = Object.fromEntries(entries.filter(([, preds]) => preds?.length))
+      setTidesByStation(loaded)
+      if (!loaded.goldengate) {
+        setError('NOAA returned no predictions for the Golden Gate station.')
+      }
+      setLoading(false)
+    })
+
+    return () => {
+      cancelled = true
+    }
   }, [])
 
   useEffect(() => {
@@ -101,29 +110,42 @@ export default function App() {
   const dayIndex = Math.min(selectedDay, days.length - 1)
   const activeDate = days[dayIndex].date
 
-  // Resolve the selected day's hi/lo predictions for each station.
-  const goldByDate = predictions ? groupByDay(predictions) : new Map()
-  const clipByDate = clipperTides ? groupByDay(clipperTides) : new Map()
-  const dayPreds = goldByDate.get(activeDate) || []
-  const dayClip = clipByDate.get(activeDate) || null
+  // The selected day's hi/lo predictions for every station that loaded.
+  const dayByStation = {}
+  for (const key of Object.keys(TIDE_STATIONS)) {
+    const preds = tidesByStation[key] && groupByDay(tidesByStation[key]).get(activeDate)
+    if (preds?.length) dayByStation[key] = preds
+  }
 
   const moonPhase = getMoonPhase(new Date(`${activeDate}T12:00:00`))
 
-  // Per-station predictions for the selected day, paired with station metadata.
-  const stationDays = [
-    { key: 'goldengate', ...TIDE_STATIONS.goldengate, predictions: dayPreds },
-    { key: 'yerbabuena', ...TIDE_STATIONS.yerbabuena, predictions: dayClip || [] },
-  ].filter(s => s.predictions.length)
+  // Peak wind for the selected day, per weather area — feeds crab scoring.
+  const windByArea = {}
+  for (const loc of weather || []) {
+    const day = loc.weather.days[dayIndex] || loc.weather.days.at(-1)
+    if (day) windByArea[loc.id] = day.windMax
+  }
 
-  // Tide + Slack cards per station — mirrors the Weather tab's per-location layout.
+  // Tide + Slack cards cover the primary stations only — the extra crabbing
+  // stations would crowd those tabs without telling you much.
+  const stationDays = PRIMARY_STATION_KEYS.filter(key => dayByStation[key]).map(key => ({
+    key,
+    ...TIDE_STATIONS[key],
+    predictions: dayByStation[key],
+  }))
+
   const tideReports = stationDays
   const slackReports = stationDays.map(s => ({ ...s, windows: getSlackWindows(s.predictions) }))
 
+  // The per-spot tabs resolve their own station, so derive for every station.
   const crabWindowsByStation = {}
   const fishWindowsByStation = {}
-  for (const s of slackReports) {
-    crabWindowsByStation[s.key] = getCrabbingWindows(s.predictions)
-    fishWindowsByStation[s.key] = getFishingWindows(s.windows)
+  for (const [key, preds] of Object.entries(dayByStation)) {
+    crabWindowsByStation[key] = getCrabbingWindows(preds, {
+      moonPhase,
+      windMax: windByArea[TIDE_STATIONS[key].weatherKey],
+    })
+    fishWindowsByStation[key] = getFishingWindows(getSlackWindows(preds))
   }
 
   // Build weather cards for the selected day: live "now" for today, daily
@@ -146,6 +168,8 @@ export default function App() {
     return { id: loc.id, name: loc.name, covers: loc.covers, data }
   })
 
+  const hasTides = Boolean(dayByStation.goldengate)
+
   function selectRange(count) {
     setRangeDays(count)
     setSelectedDay(0)
@@ -165,7 +189,7 @@ export default function App() {
             ⚠️ Couldn't load tide data: {error}
           </div>
         )}
-        {predictions && (
+        {hasTides && (
           <>
             {/* Forecast range */}
             <div className="flex gap-2 mt-4">
@@ -234,7 +258,11 @@ export default function App() {
             )}
             {activeTab === 'slack' && <SlackWindows reports={slackReports} />}
             {activeTab === 'crab' && (
-              <CrabbingSection windowsByStation={crabWindowsByStation} moonPhase={moonPhase} />
+              <CrabbingSection
+                windowsByStation={crabWindowsByStation}
+                moonPhase={moonPhase}
+                date={new Date(`${activeDate}T12:00:00`)}
+              />
             )}
             {activeTab === 'fish' && <FishingSection windowsByStation={fishWindowsByStation} />}
             {activeTab === 'catches' && <CatchesSection />}

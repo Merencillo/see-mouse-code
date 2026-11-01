@@ -103,4 +103,7 @@ export const CATCHES = [
   { location: 'Crissy Field', species: ['Walleye Surfperch', 'Jacksmelt', 'Striped Bass', 'California Halibut'] },
   { location: 'Clipper Cove Beach', species: ['Shiner Perch', 'Jacksmelt', 'Rock Crab', 'Bat Ray'] },
   { location: 'Bimla Rhinehart Vista Point', species: ['Striped Bass', 'Rockfish', 'Pileperch', 'Jacksmelt'] },
+  { location: 'Fort Baker · Horseshoe Bay', species: ['Rock Crab', 'Striped Bass', 'Jacksmelt', 'Pileperch'] },
+  { location: 'Ocean Beach', species: ['Dungeness Crab', 'Barred Surfperch', 'Striped Bass', 'White Croaker', 'Jacksmelt'] },
+  { location: 'Oyster Point Pier', species: ['Rock Crab', 'Bat Ray', 'Leopard Shark', 'White Croaker', 'Jacksmelt'] },
 ]
