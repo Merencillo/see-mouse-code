@@ -1,0 +1,11 @@
+# This is a monorepo: the fishing app lives in sf-fishing-app/, so Netlify has
+# to build from there rather than the repo root. `publish` is resolved relative
+# to `base`, so the deployed directory is sf-fishing-app/dist.
+[build]
+  base = "sf-fishing-app"
+  command = "npm run build"
+  publish = "dist"
+
+[build.environment]
+  # Vite 8 requires Node ^20.19.0 || >=22.12.0
+  NODE_VERSION = "22"
